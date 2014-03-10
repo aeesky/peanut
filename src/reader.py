@@ -7,6 +7,8 @@ import markdown
 
 from datetime import datetime
 
+ALL_METAS = ['title', 'date', 'tags', 'publish', 'top']
+
 class Reader(object):
     '''Abstract class for all readers
 
@@ -33,40 +35,51 @@ class MarkdownReader(object):
     file_name_regex = re.compile(r'([^/]+)\.(md|markdown)')
 
     def __init__(self):
-        #Init markdown paraser with some extensions.
-        self.md = markdown.Markdown(extensions=['fenced_code',  #Fenced Code Blocks
-                                                'codehilite',   #CodeHilite
-                                                'meta',         #Meta-Data
-                                                'footnotes',    #Footnotes
-                                                'tables',       #Tables
-                                                'smart_strong', #Smart Strong
-                                                'nl2br'],       #New Line to Break
-                                    extension_configs={'codehilite': [('guess_lang', False)]})
- 
-    # Meta data handlers
-    # title: Hello world
-    # date: 2014-3-10
-    # tag: test
-    # top: no
-    # publish: yes
+        '''Init markdown paraser with some extensions.'''
 
-    _meta_handlers = {
-        'tag':      lambda x: x if x else [],
-        'title':    lambda x: x[0] if x else '',
-        'date':     lambda x: datetime.strptime(x[0], '%Y-%m-%d') if x else datetime.now(),
-        'top':      lambda x: True if x and x[0]=='yes' else False,
-        'publish':  lambda x: False if x and x[0]=='no' else True,
-    }
+        extensions = ['fenced_code',  # Fenced Code Blocks
+                      'codehilite',   # CodeHilite
+                      'meta',         # Meta-Data
+                      'footnotes',    # Footnotes
+                      'tables',       # Tables
+                      'smart_strong', # Smart Strong
+                      'nl2br',        # New Line to Break
+                      ]
+
+        # Do not guess language
+        extension_configs = {'codehilite': [('guess_lang', False)]}
+
+        self.md = markdown.Markdown(extensions=extensions,
+                                    extension_configs=extension_configs)
+ 
+    _meta_handlers = [lambda x: x[0] if x else '', #title
+                      lambda x: datetime.strptime(x[0], '%Y-%m-%d') if x else datetime.now(), #date
+                      lambda x: x[0].split(',') if x else [], #tag 
+                      lambda x: False if x and x[0]=='no' else True, #publish defaults to True
+                      lambda x: True if x and x[0]=='yes' else False, #top defaults to False
+                      ]
 
     def _parse_metadata(self, meta):
+        '''Parse meta data from markdown meta.
+
+        title: Hello world
+        date: 2014-3-10
+        tags: hello, world
+        publish: yes
+        top: no
+        '''
+
         res = {}
-        for name, handler in self._meta_handlers.items():
+        handlers = dict(zip(ALL_METAS, self._meta_handlers))
+        for name, handler in handlers.items():
             value = handler(meta.get(name, None))
             res[name] = value
 
         return res
 
-    def _get_slug(self, file_name):
+    def _parse_slug(self, file_name):
+        '''parse slug from file name'''
+
         m = self.file_name_regex.search(file_name)
         if not m:
             return None
@@ -75,22 +88,15 @@ class MarkdownReader(object):
     def read(self, file_name):
         '''Read markdown file.'''
 
-        slug = self._get_slug(file_name)
-
-        if not slug:
-            print('No slug')
-            return None
+        slug = self._parse_slug(file_name)
+        draft = {}
 
         with open(file_name, 'r') as f:
             content = f.read().decode('utf-8')
             html = self.md.reset().convert(content.strip(' \n'))
-            if not self.md.Meta:
-                #Meta must not be empty
-                print('No meta')
-                return None
-
-            result = self._parse_metadata(self.md.Meta)
+            if self.md.Meta:
+                draft = self._parse_metadata(self.md.Meta)
             
-            result['content'] = html
-            result['slug'] = slug
-            return result
+            draft['content'] = html
+            draft['slug'] = slug
+            return draft
