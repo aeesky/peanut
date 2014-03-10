@@ -9,14 +9,33 @@ from datetime import datetime
 
 ALL_METAS = ['title', 'date', 'tags', 'publish', 'top']
 
+class AutoRegister(type):
+    def __new__(self, name, bases, attrs):
+        cls = type.__new__(self, name, bases, attrs)
+
+        for base in bases:
+            # register 
+            if hasattr(base, 'register'):
+                base.register(cls)
+
+        return cls
+
 class Reader(object):
+    __metaclass__ = AutoRegister
     '''Abstract class for all readers
 
     Attribute:
         file_extensions: List, all supporting file types.
     '''
 
-    file_extensions = ''
+    readers = {}
+
+    file_extensions = []
+
+    @classmethod
+    def register(cls, subclass):
+        for f in subclass.file_extensions:
+            cls.readers[f] = subclass
 
     def read(self, file_path):
         '''Read draft from path
@@ -27,7 +46,7 @@ class Reader(object):
 
         raise NotImplementedError
 
-class MarkdownReader(object):
+class MarkdownReader(Reader):
     '''Markdown reader'''
 
     file_extensions = ['md', 'markdown']
@@ -36,6 +55,8 @@ class MarkdownReader(object):
 
     def __init__(self):
         '''Init markdown paraser with some extensions.'''
+
+        super(MarkdownReader, self).__init__()
 
         extensions = ['fenced_code',  # Fenced Code Blocks
                       'codehilite',   # CodeHilite
