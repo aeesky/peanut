@@ -43,20 +43,33 @@ class BaseModel(object):
         return os.path.join(base, self.slug+'.html')
 
 class Post(BaseModel):
+    '''Post'''
 
     optional_metas = {
         'date': datetime.now(),
         'publish': True,
         'top': False
+        'tags': [],
+        'category': None,
     }
 
     layout = 'post'
 
 class Tag(BaseModel):
+    '''Tag'''
 
     layout = 'tag'
 
-class Static(BaseModel):
+    def __init__(self, title):
+        super(Tag, self).__init__(title=title, slug=title)
 
-    def __init__(self, layout, **kwargs):
-        super(Static, self).__init__(layout=layout, **kwargs)
+class Category(Tag):
+    '''Category'''
+
+    layout = 'category'
+
+class Static(BaseModel):
+    '''Static'''
+
+    def __init__(self, layout, **metas):
+        super(Static, self).__init__(layout=layout, **metas)

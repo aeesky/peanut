@@ -9,10 +9,10 @@ from datetime import datetime
 
 class BaseReader(object):
 
-    file_extensions = []
+    file_extensions = ()
 
     # All supported metadata
-    metadata = ['title', 'date', 'tags', 'publish', 'top']
+    metadata = ('title', 'date', 'tags', 'publish', 'top')
 
     def read(self, file_path):
         raise NotImplementedError
@@ -20,17 +20,18 @@ class BaseReader(object):
 class MarkdownReader(BaseReader):
     '''Markdown reader'''
 
-    file_extensions = ['md', 'markdown'] #markdown type
+    file_extensions = ('md', 'markdown') #markdown type
 
     file_name_regex = re.compile(r'([^/]+)\.(md|markdown)')
 
     #all meta handlers
-    _meta_handlers = [lambda x: x[0] if x else '', #title
-                      lambda x: datetime.strptime(x[0], '%Y-%m-%d') if x else datetime.now(), #date
-                      lambda x: x[0].split(',') if x else [], #tag
-                      lambda x: False if x and x[0]=='no' else True, #publish defaults to True
-                      lambda x: True if x and x[0]=='yes' else False, #top defaults to False
-                      ]
+    _meta_handlers = (
+        lambda x: x[0] if x else '', #title
+        lambda x: datetime.strptime(x[0], '%Y-%m-%d') if x else datetime.now(), #date
+        lambda x: x[0].split(',') if x else [], #tag
+        lambda x: False if x and x[0]=='no' else True, #publish defaults to True
+        lambda x: True if x and x[0]=='yes' else False, #top defaults to False
+    )
 
     def __init__(self):
         '''Init markdown paraser with some extensions.'''
