@@ -10,15 +10,17 @@ blog = {
 }
 
 path = {
-    'drafts' = 'drafts',
-    'html' = 'html',
-    'static' = 'static',
+    'drafts': 'drafts',
+    'html': 'html',
+    'static': 'static',
+    'post': 'posts',
+    'tag': 'tags',
 }
 
 url = {
-    'post' = 'post/{slug}.html',
-    'tag' = 'tag/{slug}.html',
-    'index' = 'index.html',
-    'sitemap' = 'sitemap.xml',
-    'rss' = 'rss.xml',
+    'post': 'posts/{slug}.html',
+    'tag': 'tags/{slug}.html',
+    'index': 'index.html',
+    'sitemap': 'sitemap.xml',
+    'rss': 'rss.xml',
 }
