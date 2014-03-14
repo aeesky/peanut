@@ -21,7 +21,7 @@ class BaseModel(object):
             setattr(self, m, metas.get(m))
 
         for m in self.optional_metas:
-            value = metas.get(m) or self.optoinal_metas[m]
+            value = metas.get(m) or self.optional_metas[m]
             setattr(self, m, value)
 
     @property

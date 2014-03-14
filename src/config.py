@@ -6,7 +6,7 @@ blog = {
     'title': u'穷折腾',
     'description': u'Zorro的个人博客',
     'sitemap': True,
-    'rss': False,
+    'rss': True,
 }
 
 path = {
