@@ -8,7 +8,7 @@ from datetime import datetime
 
 class BaseModel(object):
     required_metas = ('title', 'slug')
-    optoinal_metas = {}
+    optional_metas = {}
 
     layout = ''
     def __init__(self, **metas):
@@ -46,9 +46,10 @@ class Post(BaseModel):
     '''Post'''
 
     optional_metas = {
+        'content': '',
         'date': datetime.now(),
         'publish': True,
-        'top': False
+        'top': False,
         'tags': [],
         'category': None,
     }
@@ -62,6 +63,12 @@ class Tag(BaseModel):
 
     def __init__(self, title):
         super(Tag, self).__init__(title=title, slug=title)
+
+    def __eq__(self, other):
+        return self.title == other.title
+
+    def __hash__(self):
+        return self.title.__hash__()
 
 class Category(Tag):
     '''Category'''

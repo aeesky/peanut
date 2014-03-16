@@ -28,7 +28,7 @@ class MarkdownReader(BaseReader):
     _meta_handlers = (
         lambda x: x[0] if x else '', #title
         lambda x: datetime.strptime(x[0], '%Y-%m-%d') if x else datetime.now(), #date
-        lambda x: x[0].split(',') if x else [], #tag
+        lambda x: [t.strip(' ') for t in x[0].split(',')] if x else [], #tag
         lambda x: False if x and x[0]=='no' else True, #publish defaults to True
         lambda x: True if x and x[0]=='yes' else False, #top defaults to False
     )
