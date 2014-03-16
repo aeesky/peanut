@@ -31,7 +31,6 @@ class Blog(object):
 
             # Do not support sub category.
             for f in d['files']:
-                print f
                 posts.append(self._process_file(f, category))
 
             self.categories[category] = posts

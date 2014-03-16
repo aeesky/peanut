@@ -8,9 +8,8 @@ from datetime import datetime
 
 class BaseModel(object):
     required_metas = ('title', 'slug')
-    optional_metas = {}
+    optional_metas = {'layout'}
 
-    layout = ''
     def __init__(self, **metas):
         #check required metas
         for m in self.required_metas:
@@ -52,14 +51,15 @@ class Post(BaseModel):
         'top': False,
         'tags': [],
         'category': None,
+        'layout': 'post',
     }
-
-    layout = 'post'
 
 class Tag(BaseModel):
     '''Tag'''
 
-    layout = 'tag'
+    optional_metas = {
+        'layout': 'tag',
+    }
 
     def __init__(self, title):
         super(Tag, self).__init__(title=title, slug=title)
@@ -72,6 +72,10 @@ class Tag(BaseModel):
 
 class Category(Tag):
     '''Category'''
+
+    optional_metas = {
+        'layout': 'category',
+    }
 
     layout = 'category'
 

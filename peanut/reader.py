@@ -12,7 +12,7 @@ class BaseReader(object):
     file_extensions = ()
 
     # All supported metadata
-    metadata = ('title', 'date', 'tags', 'publish', 'top')
+    metadata = ('title', 'date', 'tags', 'publish', 'top', 'layout')
 
     def read(self, file_path):
         raise NotImplementedError
@@ -31,6 +31,7 @@ class MarkdownReader(BaseReader):
         lambda x: [t.strip(' ') for t in x[0].split(',')] if x else [], #tag
         lambda x: False if x and x[0]=='no' else True, #publish defaults to True
         lambda x: True if x and x[0]=='yes' else False, #top defaults to False
+        lambda x: x[0].strip(' ') if x else None, #layout
     )
 
     def __init__(self):
