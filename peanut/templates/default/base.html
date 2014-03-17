@@ -3,7 +3,7 @@
 <head>
   <%block name="head"></%block>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-  <title><%block name="header"></%block>${title}</title>
+  <title><%block name="header"></%block>${blog.title}</title>
   <link rel="stylesheet" href="/static/css/pure-min.css">
   <link rel="stylesheet" href="/static/css/style.css" />
   <link rel="stylesheet" href="/static/css/pygments.css" />
@@ -14,7 +14,7 @@
   <div id="main" class="pure-g">
     <header class="sidebar pure-u-7-24">
       <div class="top">
-        <a class="blog-title" href="/">${title}<span class="blog-desc">zorro的个人博客</span></a>
+        <a class="blog-title" href="/">${blog.title}<span class="blog-desc">${blog.description}</span></a>
         <ul class="menu contact">
           <li><a href="https://github.com/zqqf16">Github</a></li>
         </ul>         
@@ -22,7 +22,7 @@
       <div class="bottom">
         <ul class="menu nav">
           <li><a href="/">主页</a></li>
-          % for post in tops:
+          % for post in blog.top_posts():
           <li><a href="/${post.url}" title="${post.title}">${post.title}</a></li>
           % endfor
         </ul>

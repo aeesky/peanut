@@ -35,7 +35,9 @@ class BaseModel(object):
     @property
     def dst_path(self):
         '''destination file path'''
-        base = config.path.get(self.layout)
+
+        html_path = config.path['html']
+        base = os.path.join(html_path, config.path.get(self.layout))
         if not base:
             raise KeyError('Layout: {} not found'.format(self.layout))
 

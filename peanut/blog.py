@@ -8,10 +8,19 @@ import config
 
 from reader import Reader
 from model import Post, Category, Tag
+from theme import Theme
 
 class Blog(object):
 
     def __init__(self):
+
+        #blog info
+        self.title = config.blog['title']
+        self.domain = config.blog['domain']
+        self.description = config.blog['description']
+
+        self.theme = Theme(config.blog['theme'])
+
         self.posts = []
         self.categories = {}
         self.tags = {}
@@ -20,7 +29,7 @@ class Blog(object):
         self.reader = Reader()
 
     def load(self):
-        draft_path = config.path['drafts']
+        draft_path = config.path['draft']
 
         tree = utils.walk_directory(draft_path)
 
@@ -72,3 +81,19 @@ class Blog(object):
         self._tag_titles[title] = tag
 
         return tag
+
+    def top_posts(self):
+        return filter(lambda x: x.top, self.posts)
+
+    def generate_posts(self):
+        '''Generate posts'''
+
+        for post in self.posts:
+            template = self.theme.template(post.layout)
+            if not template:
+                raise NameError('Template for {} not found')
+            html = template.render(post=post, blog=self)
+            utils.write_file(post.dst_path, html)
+
+    def generate(self):
+        self.generate_posts()

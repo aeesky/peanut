@@ -4,6 +4,9 @@
 import os
 import config
 
-from reader import Reader
-from model import Post, Tag, Category
+import blog
 
+def main():
+    my_blog = blog.Blog()
+    my_blog.load()
+    my_blog.generate()
